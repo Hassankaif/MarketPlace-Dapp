@@ -178,7 +178,7 @@ const App = () => {
     }
   };
   
-  export const purchaseItem = async (id, price) => {
+ const purchaseItem = async (id, price) => {
     try {
       const tx = await contract.PurchaseItem(id, {
         value: ethers.utils.parseEther(price),
