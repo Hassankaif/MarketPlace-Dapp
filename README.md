@@ -90,8 +90,9 @@ src/
 # 🎥 Demo
 
 ## FrontEnd UI
-![mainpage](./public/load-animation-unscreen.gif)
-![mainpage](./public/load-animation-unscreen.gif)
+![mainpage](./public/main2.png)
+![mainpage](./public/main1.png)
+<!-- ![mainpage](./public/main3.png) -->
 
 ## 🔮 Future Enhancements
 1.  🔍 Advanced Search and Filters: Enhance user experience with better item discovery.
@@ -115,3 +116,4 @@ Open a pull request.
 * 🌟 Pinata for seamless IPFS integration. 
 * 🌟 Ethers.js for blockchain interactions.
 * 🌟 Flowbite and TailwindCSS for beautiful UI components.
+
