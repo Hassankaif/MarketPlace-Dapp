@@ -3,10 +3,13 @@ import axios from 'axios';
 import { PINATA_API_KEY, PINATA_SECRET_KEY } from '../config/constants';
 
 export const uploadToIPFS = async (file) => {
+  
   if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
     throw new Error('Pinata API keys are not configured');
   }
 
+
+  // setIsLoading(true); // Start loading
   try {
     const formData = new FormData();
     formData.append("file", file);
@@ -40,9 +43,10 @@ export const uploadToIPFS = async (file) => {
       status: error.response?.status
     });
     throw new Error(`Failed to upload to IPFS: ${error.message}`);
-  }
+  }finally {
+    // setIsLoading(false);
 };
-
+}
 export const getIPFSGatewayURL = (ipfsURI) => {
   if (!ipfsURI) return '/api/placeholder/400/400';
   const hash = ipfsURI.replace('ipfs://', '');
@@ -50,7 +54,9 @@ export const getIPFSGatewayURL = (ipfsURI) => {
 };
 
 
-//test
+
+
+
 // Add this function to ipfs.js for testing
 export const testPinataConnection = async () => {
     try {

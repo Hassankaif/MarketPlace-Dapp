@@ -2,11 +2,19 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import { uploadToIPFS } from '../utils/ipfs';
+import { useTransaction } from './useTransaction';
 
 export const useMarketplace = (contract, accounts) => {
   const [items, setItems] = useState([]);
   const [ownedItems, setOwnedItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const {
+    isProcessing,
+    txStatus,
+    txMessage,
+    handleTransaction,
+    clearTxStatus
+  } = useTransaction();
 
   const loadItems = async () => {
     try {
@@ -37,47 +45,40 @@ export const useMarketplace = (contract, accounts) => {
   };
 
   const listItem = async (name, price, file) => {
-    try {
-      setLoading(true);
-      const imageURI = await uploadToIPFS(file);
-      const tx = await contract.ListItemsForSale(
-        name,
-        ethers.utils.parseEther(price),
-        imageURI
-      );
-      await tx.wait();
-      await loadItems();
-      return true;
-    } catch (error) {
-      console.error("Error listing item:", error);
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    return handleTransaction(
+      async () => {
+        const imageURI = await uploadToIPFS(file);
+        const tx = await contract.ListItemsForSale(
+          name,
+          ethers.utils.parseEther(price),
+          imageURI
+        );
+        return tx;
+      },
+      'Item listed successfully!'
+    );
   };
 
   const purchaseItem = async (id, price) => {
-    try {
-      const tx = await contract.PurchaseItem(id, {
-        value: ethers.utils.parseEther(price),
-      });
-      await tx.wait();
-      await loadItems();
-      await loadOwnedItems();
-    } catch (error) {
-      console.error("Error purchasing item:", error);
-    }
+    return handleTransaction(
+      async () => {
+        const tx = await contract.PurchaseItem(id, {
+          value: ethers.utils.parseEther(price),
+        });
+        return tx;
+      },
+      'Item purchased successfully!'
+    );
   };
 
   const confirmDelivery = async (id) => {
-    try {
-      const tx = await contract.confirmDelivery(id);
-      await tx.wait();
-      await loadItems();
-      await loadOwnedItems();
-    } catch (error) {
-      console.error("Error confirming delivery:", error);
-    }
+    return handleTransaction(
+      async () => {
+        const tx = await contract.confirmDelivery(id);
+        return tx;
+      },
+      'Delivery confirmed successfully!'
+    );
   };
 
   return {
@@ -88,6 +89,10 @@ export const useMarketplace = (contract, accounts) => {
     purchaseItem,
     confirmDelivery,
     loadItems,
-    loadOwnedItems
+    loadOwnedItems,
+    isProcessing,
+    txStatus,
+    txMessage,
+    clearTxStatus
   };
 };
